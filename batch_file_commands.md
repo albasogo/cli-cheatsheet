@@ -62,9 +62,3 @@ Chuleta de comandos en **Batch (CMD)** para trabajar con archivos y directorios 
 | `ECHO Hola >> archivo.txt` | Agrega texto al final de un archivo. |
 | `SET /P VAR=<archivo.txt` | Lee la primera línea de un archivo en una variable. |
 
----
-
-💡 **Tip:** Si necesitas más detalles sobre un comando, usa `HELP <comando>` en la línea de comandos.
-
-🚀 **Autor:** [Tu Nombre o Usuario]  
-📌 **Repositorio:** [GitHub / Tu Proyecto]  
