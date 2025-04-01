@@ -1,0 +1,76 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time
+
+# Crear el driver
+driver = webdriver.Firefox()
+wait = WebDriverWait(driver, 15)
+
+# Ir a la web de Renfe
+driver.get("https://www.renfe.com/")
+driver.save_screenshot("01_inicio.png")
+
+# Aceptar cookies si aparecen
+try:
+    aceptar_btn = wait.until(EC.element_to_be_clickable((By.ID, "onetrust-accept-btn-handler")))
+    aceptar_btn.click()
+    time.sleep(1)
+    driver.save_screenshot("02_cookies_aceptadas.png")
+except:
+    print("No hay banner de cookies (o ya fue aceptado)")
+
+# Campo 'Origen': Vigo
+origen_input = wait.until(EC.element_to_be_clickable((By.ID, "origin")))
+origen_input.clear()
+origen_input.send_keys("Vigo")
+
+# Esperar a que al menos una opciÃ³n contenga VIGO
+wait.until(lambda d: any("VIGO" in li.text.upper() for li in d.find_elements(By.CSS_SELECTOR, "#awesomplete_list_1 li")))
+time.sleep(0.3)
+opciones = driver.find_elements(By.CSS_SELECTOR, "#awesomplete_list_1 li")
+
+for opcion in opciones:
+    print(f"[ORIGEN] OpciÃ³n: {opcion.text}")
+    if "VIGO" in opcion.text.upper():
+        opcion.click()
+        break
+
+driver.save_screenshot("03_origen_vigo.png")
+
+# Campo 'Destino': Alicante
+destino_input = wait.until(EC.element_to_be_clickable((By.ID, "destination")))
+destino_input.clear()
+destino_input.send_keys("Alicante")
+
+# Esperar a que aparezcan opciones con ALICANTE
+wait.until(lambda d: any("ALICANTE" in li.text.upper() for li in d.find_elements(By.CSS_SELECTOR, "#awesomplete_list_2 li")))
+time.sleep(0.3)
+opciones = driver.find_elements(By.CSS_SELECTOR, "#awesomplete_list_2 li")
+
+for opcion in opciones:
+    print(f"[DESTINO] OpciÃ³n: {opcion.text}")
+    if "ALICANTE" in opcion.text.upper():
+        opcion.click()
+        break
+
+driver.save_screenshot("04_destino_alicante.png")
+
+# Fecha: por defecto (si querÃ©s podemos automatizar el calendario)
+# Buscar trenes
+# Buscar botÃ³n por su texto: "Buscar billete"
+buscar_btn = wait.until(EC.element_to_be_clickable(
+    (By.XPATH, "//span[contains(text(), 'Buscar billete')]/ancestor::button")
+))
+buscar_btn.click()
+driver.save_screenshot("05_busqueda_enviada.png")
+
+
+# Esperar resultados (hasta que cambie de pÃ¡gina o muestre algo nuevo)
+time.sleep(10)
+driver.save_screenshot("06_resultados.png")
+
+# Cerrar navegador
+driver.quit()
